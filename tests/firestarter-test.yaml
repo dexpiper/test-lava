@@ -7,5 +7,5 @@ metadata:
 
 run:
     steps:
-        - lava-test-case firestarter-test chmod +x ./tests/firestarter.sh
+        - lava-test-case firestarter-test --shell chmod +x ./tests/firestarter.sh
         - lava-test-case firestarter-test --shell ./tests/firestarter.sh
