@@ -7,4 +7,4 @@ metadata:
 
 run:
     steps:
-        - lava-test-case linux-posix-pwd --shell ./firestarter.sh
+        - lava-test-case linux-posix-pwd --shell ./tests/firestarter.sh
