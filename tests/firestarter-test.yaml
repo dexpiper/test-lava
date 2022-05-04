@@ -1,0 +1,10 @@
+metadata:
+    format: Lava-Test Test Definition 1.0
+    name: firestarter-test
+    description: "Starts FIRESTARTER tests"
+    maintainer:
+        - a.kurilov@yadro.com
+
+run:
+    steps:
+        - lava-test-case linux-posix-pwd --shell ./firestarter.sh
