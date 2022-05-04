@@ -1,2 +1,7 @@
 git clone https://github.com/tud-zih-energy/FIRESTARTER
-lava-test-case firestarter-test --shell ./FIRESTARTER -t 300
+cd FIRESTARTER
+mkdir build
+cd build
+cmake .. .
+make
+lava-test-case firestarter-test --shell ./src/FIRESTARTER -t 300

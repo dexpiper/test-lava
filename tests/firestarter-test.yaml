@@ -7,4 +7,4 @@ metadata:
 
 run:
     steps:
-        - lava-test-case firestarter-test --shell ./tests/firestarter.sh
+        - lava-test-case firestarter-test --shell /root/FIRESTARTER/build/src/FIRESTARTER -t 300
