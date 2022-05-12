@@ -1,6 +1,6 @@
 check_line () {
     echo "nvidia-smi output: $*"
-    if [$* == ""]; then
+    if [ "$*" == "" ]; then
         echo "Command nvidia-smi not found. Starting FIRESTARTER without CUDA"
     elif [[ "$*" == *"has failed"* ]]; then
         echo "No CUDA on this machine. Starting FIRESTARTER without CUDA"
