@@ -1,31 +1,28 @@
 check_line () {
-    if [ $1 == *"NVIDIA-SMI has failed"* ]; then
-        return 1
-    else
+    echo "$*"
+    if [[ "$*" == *"has failed"* ]]; then
+        echo "No CUDA on this machine"
         return 0
+    else
+        return 1
     fi
 }
 
 start_cuda_job () {
-    echo "lava-test-case firestarter-test --shell /root/FIRESTARTER/src/FIRESTARTER_CUDA -t 300"
-}
-
-start_nocuda_job () {
-    NO_CUDA=1
-    echo "lava-test-case firestarter-test --shell /root/FIRESTARTER/src/FIRESTARTER -t 300"
-}
-
-
-NO_CUDA=0
-readarray -t lines < <(lspci | grep VGA)
-for line in "${lines[@]}"; do
-    check_line $line
-    if [ $? == 1 ]; then
-        start_nocuda_job
-        break
+    if [ $CUDA == 1 ]; then
+        echo "lava-test-case firestarter-test --shell /root/FIRESTARTER/src/FIRESTARTER_CUDA -t 300"
+    else
+        echo "lava-test-case firestarter-test --shell /root/FIRESTARTER/src/FIRESTARTER -t 300"
     fi
-done
-echo "NO_CUDA: " $NO_CUDA
-if [ $NO_CUDA != 1 ]; then
-    start_cuda_job
+}
+
+
+CUDA=1
+output=$(lspci | grep VGA)
+check_line $output
+if [ $? == 0 ]; then
+    CUDA=0
+    break
 fi
+echo "CUDA: " $CUDA
+start_cuda_job
