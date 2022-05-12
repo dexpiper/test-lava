@@ -1,9 +1,12 @@
 check_line () {
-    echo "$*"
-    if [[ "$*" == *"has failed"* ]]; then
-        echo "No CUDA on this machine"
+    echo "nvidia-smi output: $*"
+    if [$* == ""]; then
+        echo "Command nvidia-smi not found. Starting FIRESTARTER without CUDA"
+    elif [[ "$*" == *"has failed"* ]]; then
+        echo "No CUDA on this machine. Starting FIRESTARTER without CUDA"
         return 0
     else
+        echo "CUDA device found, starting FIRESTARTER with CUDA"
         return 1
     fi
 }
@@ -18,11 +21,9 @@ start_cuda_job () {
 
 
 CUDA=1
-output=$(lspci | grep VGA)
+output=$(nvidia-smi)
 check_line $output
 if [ $? == 0 ]; then
     CUDA=0
-    break
 fi
-echo "CUDA: " $CUDA
 start_cuda_job
