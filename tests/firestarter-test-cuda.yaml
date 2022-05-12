@@ -7,4 +7,4 @@ metadata:
 
 run:
     steps:
-        - bash run_approp_firestarter.sh
+        - bash run_approp_firestarter.sh -t 300
