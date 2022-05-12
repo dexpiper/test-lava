@@ -7,4 +7,4 @@ metadata:
 
 run:
     steps:
-        - lava-test-case firestarter-test --shell /root/FIRESTARTER/src/FIRESTARTER_CUDA -t 300
+        - bash run_approp_firestarter.sh
