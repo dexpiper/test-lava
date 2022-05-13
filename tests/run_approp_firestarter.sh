@@ -131,7 +131,7 @@ done
 
 
 if [ $CUDAONLY == 1 ]; then
-    echo "Run FIRESTARTER_CUDA_ONLY with: $TIME$LOAD$PERIOD$THREADS$BIND"
+    echo "Run FIRESTARTER_CUDA_ONLY with: $USEGPUFLOAT$USEGPUDOUBLE$GPUS$MATRIXSIZE$TIME"
     start_cuda_job
     exit
 fi
