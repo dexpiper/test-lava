@@ -17,9 +17,12 @@ check_line () {
     elif [[ "$*" == *"has failed"* ]]; then
         echo "No CUDA detected on this machine. Starting FIRESTARTER without CUDA"
         return 0
-    else
+    elif [[ "$*" == *"CUDA Version"* ]]; then
         echo "CUDA device found, starting FIRESTARTER with CUDA"
         return 1
+    else
+        echo "Cannot detect CUDA info in nvidia-smi output, starting FIRESTARTER without CUDA"
+        return 0
     fi
 }
 
