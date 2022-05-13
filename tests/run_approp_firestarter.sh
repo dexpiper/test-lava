@@ -1,10 +1,33 @@
 #!/usr/bin/env bash
 
+# Check if CUDA available with nvidia-smi, then start appropriate
+# FIRESTARTER (with or without GPU load: FIRESTARTER_CUDA or bare FIRESTARTER)
 
-############################################################
-# USAGE: run_approp_firestarter [-t]                       #
-#   -t set time for FIRESTARTER to burn (defaults to 300)  #
-############################################################
+# maintainer: a.kurilov@yadro.com
+
+######################################################################################
+#                                                                                    #
+# USAGE: ./run_approp_firestarter.sh [-f] [-d] [-g:] [ -m:] [-t:]                    #
+#            [-l:] [-p:] [-n:] [-b:] [-t:]                                           #
+#                                                                                    #
+#     Uses standard FIRESTARTER options listed above.                                #
+#     Please refer https://github.com/tud-zih-energy/FIRESTARTER#usage-and-options   #
+#     Flags with ":" (colon) require arguments, but no explicit validation provided. #
+#                                                                                    #
+#   -f Use single precision matrix multiplications                                   #
+#   -d Use double precision matrix multiplications instead of default                #
+#   -t set time for FIRESTARTER to burn (defaults to 300)                            #
+#   -g Number of gpus to use, default: -1 (all)                                      #
+#   -m Size of the matrix to calculate, default: 0 (maximum)                         #
+#   -t TIMEOUT Set the timeout (seconds) after which FIRESTARTER terminates itself.  #
+#      Instead of standard FIRESTARTER default (no timeout) script will set 300 sec  #
+#      if no other timeout specified.                                                #
+#   -l LOAD Set the percentage of high CPU load to LOAD (%) default: 100             #
+#   -p PERIOD Set the interval length for CPUs to PERIOD (usec), default: 100000     #
+#   -n COUNT THREADS  Specify the number of threads                                  #
+#   -b CPULIST Select certain CPUs. CPULIST format: "x,y,z", "x-y", "x-y/step"       #
+#                                                                                    #
+######################################################################################
 
 
 # check output of nvidia-smi and return 0 or 1:
@@ -30,19 +53,63 @@ check_line () {
 # run appropriate command: FIRESTARTER_CUDA with CUDA, else just bare FIRESTARTER
 start_cuda_job () {
     if [ $CUDA == 1 ]; then
-        lava-test-case firestarter-test --shell /root/FIRESTARTER/src/FIRESTARTER_CUDA -t $TIME
+        echo "lava-test-case firestarter-test --shell /root/FIRESTARTER/src/FIRESTARTER_CUDA \
+$USEGPUFLOAT$USEGPUDOUBLE$GPUS$MATRIXSIZE$TIME$LOAD$PERIOD$THREADS$BIND"
     else
-        lava-test-case firestarter-test --shell /root/FIRESTARTER/src/FIRESTARTER -t $TIME
+        echo "lava-test-case firestarter-test --shell /root/FIRESTARTER/src/FIRESTARTER \
+$USEGPUFLOAT$USEGPUDOUBLE$GPUS$MATRIXSIZE$TIME$LOAD$PERIOD$THREADS$BIND"
     fi
 }
 
 
 # read arguments
-TIME=300                            # default time 300 sec
-while getopts ":t:" options; do
+USEGPUFLOAT=""
+USEGPUDOUBLE=""
+GPUS=""
+MATRIXSIZE=""
+TIME="-t 300 "                            # default time 300 sec, always set
+LOAD=""
+PERIOD=""
+THREADS=""
+BIND=""
+while getopts ":fdg:m:t:l:p:n:b:" options; do
     case "${options}" in
+        f)
+            USEGPUFLOAT="-f "
+        ;;
+
+        d)
+            USEGPUDOUBLE="-d "
+        ;;
+
+        g)
+            GPUS="-g ${OPTARG} "
+        ;;
+
+        m)
+            MATRIXSIZE="-m ${OPTARG} "
+        ;;
+
         t)
-            TIME=${OPTARG}          # rewrite TIME from args
+            TIME="-t ${OPTARG} "
+        ;;
+
+        l)
+            LOAD="-l ${OPTARG} "
+        ;;
+
+        p)
+            PERIOD="-p ${OPTARG} "
+        ;;
+
+        n)
+            THREADS="-n ${OPTARG} "
+        ;;
+
+        b)
+            BIND="-b ${OPTARG} "
+        ;;
+
     esac
 done
 
@@ -51,8 +118,10 @@ output=$(nvidia-smi)
 check_line $output
 if [ $? == 0 ]; then
     CUDA=0
-    echo "Run FIRESTARTER without CUDA for $TIME sec"
+    echo "Run FIRESTARTER without CUDA with: $USEGPUFLOAT$USEGPUDOUBLE$GPUS$MATRIXSIZE\
+$TIME$LOAD$PERIOD$THREADS$BIND"
 else
-    echo "Run FIRESTARTER_CUDA for $TIME sec"
+    echo "Run FIRESTARTER_CUDA with: $USEGPUFLOAT$USEGPUDOUBLE$GPUS$MATRIXSIZE\
+$TIME$LOAD$PERIOD$THREADS$BIND"
 fi
 start_cuda_job
