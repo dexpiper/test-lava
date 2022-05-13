@@ -7,5 +7,4 @@ metadata:
 
 run:
     steps:
-        - cd tests
-        - bash run_approp_firestarter.sh -t 300
+        - ./tests/run_approp_firestarter.sh -d -t 300 -l 50
