@@ -50,5 +50,8 @@ output=$(nvidia-smi)
 check_line $output
 if [ $? == 0 ]; then
     CUDA=0
+    echo "Run FIRESTARTER without CUDA for $TIME sec"
+else
+    echo "Run FIRESTARTER_CUDA for $TIME sec"
 fi
 start_cuda_job
