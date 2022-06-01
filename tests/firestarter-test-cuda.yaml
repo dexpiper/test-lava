@@ -7,4 +7,5 @@ metadata:
 
 run:
     steps:
+        - bash echo $bmc_address
         - bash ./tests/run_approp_firestarter.sh -d -t 300 -l 50
